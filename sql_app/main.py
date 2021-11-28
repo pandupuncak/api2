@@ -24,11 +24,11 @@ def get_db():
 
 
 #Post Menu (Add New Menu Item)
-@app.post("/orders/")
-async def order(pesanan : schemas.PesananCreate, item: schemas.ItemPesananCreate,db: Session = Depends(get_db)):
-    db_order = crud.create_order(db,pesanan)
-    db_orderitems = crud.create_item_order(db, item, db_order.id_pesanan)
-    return db_order,db_orderitems
+# @app.post("/orders/")
+# async def order(pesanan : schemas.PesananCreate, item: schemas.ItemPesananCreate,db: Session = Depends(get_db)):
+#     db_order = crud.create_order(db,pesanan)
+#     db_orderitems = crud.create_item_order(db, item, db_order.id_pesanan)
+#     return db_order,db_orderitems
 
 # @app.patch("/orders/")
 # async def update_item(status : schemas.Status):

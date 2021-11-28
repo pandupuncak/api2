@@ -49,7 +49,7 @@ class item_pesanan(Base):
     orders = relationship("Order", back_populates="products")
 
 
-class Products(Base):
+class Product(Base):
     __tablename__ = "product"
 
     product_id = Column(BigInteger, primary_key=True, index=True)

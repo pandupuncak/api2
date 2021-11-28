@@ -14,38 +14,28 @@ def get_user(db: Session, user_id: int):
 
 
 
-def get_user_by_email(db: Session, email: str):
-
+def get_user(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
 
+def get_product(db: Session, product_id: int):
+    return db.query(models.Product).filter(models.Product.product_id == product_id).first()
 
+def get_benefit(db: Session, benefit_id: int):
+    return db.query(models.Benefit).filter(models.Benefit.id_benefit == benefit_id).first()
 
-
-def get_users(db: Session, skip: int = 0, limit: int = 100):
-
-    return db.query(models.User).offset(skip).limit(limit).all()
-
-
-
-def create_user(db: Session, user: schemas.UserCreate):
-    fake_hashed_password = user.password + "notreallyhashed"
-    db_user = models.User(email=user.email, hashed_password=fake_hashed_password)
-    db.add(db_user)
+def create_order(db: Session, order: schemas.PesananCreate):
+    db_order = models.Order(id_user = order.id_user, nama_pemesan = order.nama_pemesan, no_telepon = order.no_telepon, 
+    alamat_pengiriman = order.alamat_pengiriman, metode_pembayaran = order.metode_pembayaran, ekspedisi = order.ekspedisi, 
+    informasi_pengiriman = order.informasi_pengiriman)
+    db.add(db_order)
     db.commit()
-    db.refresh(db_user)
-    return db_user
+    db.refresh(db_order)
+    return db_order
 
-
-
-def get_items(db: Session, skip: int = 0, limit: int = 100):
-
-    return db.query(models.Item).offset(skip).limit(limit).all()
-
-
-
-def create_user_item(db: Session, item: schemas.ItemCreate, user_id: int):
-    db_item = models.Item(**item.dict(), owner_id=user_id)
+def create_item_order(db: Session, item: schemas.ItemPesananCreate, pesanan: int):
+    harga_produk = item.kuantitas * (get_product(db,item.produk).harga)
+    db_item = models.item_pesanan(id_pesanan = pesanan, id_produk = item.produk, kuantitas= item.kuantitas, 
+    total_harga_produk = harga_produk, notes = item.notes)
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
-    return db_item

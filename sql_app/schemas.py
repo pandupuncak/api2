@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
-class produk(BaseModel):
+class ProdukBase(BaseModel):
     id_produk: int
     nama_produk: str
     harga: int
@@ -11,81 +11,54 @@ class produk(BaseModel):
     stok: int
     gambar: str
 
-class Benefit(BaseModel):
+class Produk(ProdukBase):
+    class Config:
+        orm_mode = True
+
+class BenefitBase(BaseModel):
     id_benefit: int
     nama: str
     poin: int
     stok: int
     deskripsi: str
 
-class item_pesanan(BaseModel):
-    id_pesanan: int
-    produk: produk
+class Benefit(BenefitBase):
+    class Config:
+        orm_mode = True
+
+class ItemPesananBase(BaseModel):
     kuantitas: int
-    total_harga_produk: int
     notes: str
 
-class pesanan(BaseModel):
+class ItemPesananCreate(ItemPesananBase):
+    produk: int
+
+
+class ItemPesanan(ItemPesananBase):
     id_pesanan: int
+    total_harga_produk: int
+    class Config:
+        orm_mode = True
+
+class PesananBase(BaseModel):
     id_user: int
     nama_pemesan: str
     no_telepon: int
     alamat_pengiriman: str
-    total_harga: int
     metode_pembayaran: str
     ekspedisi: str
-    benefit: Benefit
-    status_pesanan: str
-    informasi_pengiriman: str
-   
-    rincian_pesanan: List[item_pesanan]
+    informasi_pengiriman: Optional[str] 
 
-class Status(BaseModel):
-    id_pesanan: int
-    status_pesanan: str
+    #Tambahin status, benefit, rincian pesanan di inherit
 
+class PesananCreate(PesananBase):
+    benefit : Optional[Benefit]
 
-class ItemBase(BaseModel):
-
-    title: str
-
-    description: Optional[str] = None
-
-
-
-
-class ItemCreate(ItemBase):
-
-    pass
-
-
-
-class Item(ItemBase):
+class Pesanan(PesananBase):
     id: int
-    owner_id: int
-
-    class Config:
-        orm_mode = True
-
-
-
-class UserBase(BaseModel):
-
-    email: str
-
-
-
-
-class UserCreate(UserBase):
-
-    password: str
-
-
-
-class User(UserBase):
-    id: int
-    is_active: bool
-    items: List[Item] = []
+    rincian_pesanan: List[ItemPesanan] = []
+    total_harga: int = 0
+    status_pesanan : str
 
     class Config:
         orm_mode = True

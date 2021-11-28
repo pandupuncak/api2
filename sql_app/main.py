@@ -10,7 +10,7 @@ from .database import SessionLocal, engine
 models.Base.metadata.create_all(bind=engine)
 
 
-app = FastAPI(title="Sadajiwa Auth",
+app = FastAPI(title="Sadajiwa Checkout",
               description="18219047", openapi_tags="checkout_products")
 
 
@@ -23,45 +23,13 @@ def get_db():
         db.close()
 
 
-@app.post("/users/", response_model=schemas.User)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = crud.get_user_by_email(db, email=user.email)
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    return crud.create_user(db=db, user=user)
-
-
-@app.get("/users/", response_model=List[schemas.User])
-def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    users = crud.get_users(db, skip=skip, limit=limit)
-    return users
-
-
-@app.get("/users/{user_id}", response_model=schemas.User)
-def read_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = crud.get_user(db, user_id=user_id)
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return db_user
-
-
-@app.post("/users/{user_id}/items/", response_model=schemas.Item)
-def create_item_for_user(
-    user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)
-):
-    return crud.create_user_item(db=db, item=item, user_id=user_id)
-
-
-@app.get("/items/", response_model=List[schemas.Item])
-def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    items = crud.get_items(db, skip=skip, limit=limit)
-    return items
-
 #Post Menu (Add New Menu Item)
 @app.post("/orders/")
-async def order(pesanan : schemas.pesanan):
-    order_dict = pesanan.dict()
+async def order(pesanan : schemas.PesananCreate, item: schemas.ItemPesananCreate,db: Session = Depends(get_db)):
+    db_order = crud.create_order(db,pesanan)
+    db_orderitems = crud.create_item_order(db, item, db_order.id_pesanan)
+    return db_order,db_orderitems
 
-@app.patch("/orders/")
-async def update_item(status : schemas.Status):
-    status_dict = status.dict()
+# @app.patch("/orders/")
+# async def update_item(status : schemas.Status):
+#     status_dict = status.dict()

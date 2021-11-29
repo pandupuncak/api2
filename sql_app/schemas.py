@@ -1,5 +1,5 @@
+from datetime import date
 from typing import List, Optional
-
 
 from pydantic import BaseModel
 
@@ -27,15 +27,12 @@ class Benefit(BenefitBase):
         orm_mode = True
 
 class ItemPesananBase(BaseModel):
+    id_produk : int
+    id_pesanan: int
     kuantitas: int
-    notes: str
-
-class ItemPesananCreate(ItemPesananBase):
-    produk: int
-
+    notes: Optional[str]
 
 class ItemPesanan(ItemPesananBase):
-    id_pesanan: int
     total_harga_produk: int
     class Config:
         orm_mode = True
@@ -47,18 +44,16 @@ class PesananBase(BaseModel):
     alamat_pengiriman: str
     metode_pembayaran: str
     ekspedisi: str
-    informasi_pengiriman: Optional[str] 
-
-    #Tambahin status, benefit, rincian pesanan di inherit
+    total_harga: int = 0
+    benefit : Optional[int]
+    status_pesanan : str = "Accepted"
 
 class PesananCreate(PesananBase):
-    benefit : Optional[Benefit]
+    id_produk: int
+    kuantitas: int
+    notes: Optional[str]
 
 class Pesanan(PesananBase):
     id: int
-    rincian_pesanan: List[ItemPesanan] = []
-    total_harga: int = 0
-    status_pesanan : str
-
     class Config:
         orm_mode = True

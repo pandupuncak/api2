@@ -16,11 +16,15 @@ class Produk(ProdukBase):
         orm_mode = True
 
 class BenefitBase(BaseModel):
+    id_konten: int
     id_benefit: int
-    nama: str
-    poin: int
-    stok: int
+    nama_benefit: str
     deskripsi: str
+    konten: str
+    caption: str
+    syarat_ketentuan: str
+    diskon: int
+    stok: int
 
 class Benefit(BenefitBase):
     class Config:
@@ -45,7 +49,7 @@ class PesananBase(BaseModel):
     metode_pembayaran: str
     ekspedisi: str
     total_harga: int = 0
-    benefit : Optional[int]
+    id_benefit : Optional[int]
     status_pesanan : str = "Accepted"
 
 class PesananCreate(PesananBase):
@@ -53,7 +57,10 @@ class PesananCreate(PesananBase):
     kuantitas: int
     notes: Optional[str]
 
+class PesananUpdate(PesananBase):
+    id_pesanan: int
+
 class Pesanan(PesananBase):
-    id: int
+    id_pesanan: int
     class Config:
         orm_mode = True

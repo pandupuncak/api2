@@ -14,6 +14,16 @@ def get_product(db: Session, product_id: int):
 def get_benefit(db: Session, benefit_id: int):
     return db.query(models.Benefit).filter(models.Benefit.id_benefit == benefit_id).first()
 
+def get_item_order(db: Session, id_item: int, id_order: int):
+    return db.query(models.item_pesanan).filter((models.item_pesanan.id_pesanan == id_order) and 
+    (models.item_pesanan.id_produk == id_item))
+
+def get_order(db: Session, order_id: int):
+    return db.query(models.Order).filter(models.Order.id_pesanan == order_id).first()
+
+def get_order_items(db: Session, order_id: int, skip: int = 0, limit: int = 100):
+    return db.query(models.item_pesanan).filter(models.item_pesanan.id_pesanan == order_id).offset(skip).limit(limit).all()
+
 def create_order(db: Session, order: schemas.PesananCreate):
     db_order = models.Order(id_user = order.id_user, nama_pemesan = order.nama_pemesan, no_telepon = order.no_telepon, 
                         alamat_pengiriman = order.alamat_pengiriman, metode_pembayaran = order.metode_pembayaran, ekspedisi = order.ekspedisi,
@@ -31,4 +41,34 @@ def create_item_order(db: Session, item: schemas.PesananCreate, pesanan: int):
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
+
+
+    add_order_harga(db,pesanan,harga_produk)
+
     return db_item
+
+def update_order_status(db:Session, id_order: int, status_change: str):
+    db_order = get_order(db, id_order)
+    db.query(models.Order).filter(models.Order.id_pesanan == id_order)({"status_pesanan":status_change}, synchronize_session = "fetch")
+    db.commit()
+    db.refresh(db_order)
+
+def add_order_harga(db:Session, id_order: int, update_harga: int):
+    db_order = get_order(db, id_order)
+    harga_total = db_order.total_harga + update_harga
+    db.query(models.Order).filter(models.Order.id_pesanan == id_order)({"total_harga": harga_total}, synchronize_session = "fetch")
+    db.commit()
+    db.refresh(db_order)
+
+def update_order(db: Session, order: schemas.PesananUpdate):
+    db_order = get_order(db, order.id_pesanan)
+    db.query(models.Order).filter(models.Order.id_pesanan == order.id_pesanan).update(dict(order))
+    db.commit()
+    db.refresh(db_order)
+    return db_order
+
+def apply_benefit(db: Session, id_order: int, id_benefit: int):
+    db_order = get_order(db, order.id_pesanan)
+    db_benefit_diskon = get_benefit(db,id_benefit)
+    harga_update = db_order.total_harga - db_benefit_diskon.diskon
+    db_order.update({"total_harga": harga_update}, synchronize_session = "fetch")

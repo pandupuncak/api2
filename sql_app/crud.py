@@ -42,19 +42,27 @@ def create_item_order(db: Session, item: schemas.PayloadPesanan, pesanan: int):
     db.commit()
     db.refresh(db_item)
 
+    update_item_stock(db,item.id_produk, -1)
     #add_order_harga(db,pesanan,harga_produk)
     return db_item
 
+def update_item_stock(db: Session, item: int, qty: int):
+    db_product_stock = get_product(db,item) + qty
+    if(db_product_stock <= 0):
+        db_product_stock = 0
+    db.query(models.Product.id_pesanan == item).update({"stok" : db_product_stock})
+
 def update_order_status(db:Session, id_order: int, status_change: str):
     db_order = get_order(db, id_order)
-    db.query(models.Order).filter(models.Order.id_pesanan == id_order)({"status_pesanan":status_change}, synchronize_session = "fetch")
+    db.query(models.Order).filter(models.Order.id_pesanan == id_order).update({"status_pesanan":status_change}, synchronize_session = "fetch")
     db.commit()
     db.refresh(db_order)
+
 
 def add_order_harga(db:Session, id_order: int, update_harga: int):
     db_order = get_order(db, id_order)
     harga_total = db_order.total_harga + update_harga
-    db.query(models.Order).filter(models.Order.id_pesanan == id_order)({"total_harga": harga_total}, synchronize_session = "fetch")
+    db.query(models.Order).filter(models.Order.id_pesanan == id_order).update({"total_harga": harga_total}, synchronize_session = "fetch")
     db.commit()
     db.refresh(db_order)
 

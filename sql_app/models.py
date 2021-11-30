@@ -72,9 +72,9 @@ class Benefit(Base):
     diskon = Column(Integer)
     stok = Column(Integer)
 
-class BenefitMember(Base):
-    __tablename__ = "benefitMember"
+# class BenefitMember(Base):
+#     __tablename__ = "benefitMember"
 
-    member_id = Column(Integer)
-    benefit_id = Column(BigInteger)
-    kuantitas = Column(Integer)
+#     member_id = Column(Integer)
+#     benefit_id = Column(BigInteger)
+#     kuantitas = Column(Integer)

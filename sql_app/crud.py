@@ -84,4 +84,6 @@ def apply_benefit(db: Session, id_order: int, id_benefit: int):
     db_benefit_diskon = get_benefit(db,id_benefit)
     harga_update = db_order.total_harga - db_benefit_diskon.diskon
     db_order.update({"total_harga": harga_update}, synchronize_session = "fetch")
+    db.commit()
+    db.refresh(db_order)
 

@@ -70,6 +70,8 @@ def add_order_harga(db:Session, id_order: int, update_harga: int):
     db.commit()
     db.refresh(db_order)
 
+    return db_order
+
 def update_order(db: Session, order: schemas.PesananUpdate):
     db_order = get_order(db, order.id_pesanan)
     db.query(models.Order).filter(models.Order.id_pesanan == order.id_pesanan).update(dict(order))

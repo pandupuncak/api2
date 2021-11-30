@@ -55,6 +55,7 @@ def order(pesanan : schemas.PesananCreate,db: Session = Depends(get_db)):
         db_orderitems.append(item_ordered)
     if "id_benefit" in pesanan:
         crud.apply_benefit(db,db_order.id_pesanan,pesanan.benefit) #Update Schemanya
+        db_order = db_order
 
     return db_order
 

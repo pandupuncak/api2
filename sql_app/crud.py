@@ -27,7 +27,7 @@ def get_order_items(db: Session, order_id: int, skip: int = 0, limit: int = 100)
 def create_order(db: Session, order: schemas.PesananCreate):
     db_order = models.Order(id_user = order.id_user, nama_pemesan = order.nama_pemesan, no_telepon = order.no_telepon, 
                         alamat_pengiriman = order.alamat_pengiriman, metode_pembayaran = order.metode_pembayaran, ekspedisi = order.ekspedisi,
-                        total_harga = order.total_harga, id_benefit = order.idBenefit, status_pesanan = order.status_pesanan)
+                        total_harga = order.total_harga, id_benefit = order.id_benefit, status_pesanan = order.status_pesanan)
     db.add(db_order)
     db.commit()
     db.refresh(db_order)
@@ -86,4 +86,6 @@ def apply_benefit(db: Session, id_order: int, id_benefit: int):
     db.query(models.Order).filter(models.Order.id_pesanan == id_order).update({"total_harga": harga_update}, synchronize_session = "fetch")
     db.commit()
     db.refresh(db_order)
+
+    return db_order
 

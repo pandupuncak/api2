@@ -47,14 +47,18 @@ def create_item_order(db: Session, item: schemas.PayloadPesanan, pesanan: int):
     return db_item
 
 def update_item_stock(db: Session, item: int, qty: int):
-    db_product_stock = get_product(db,item) + qty
-    if(db_product_stock <= 0):
-        db_product_stock = 0
-    db.query(models.Product.id_pesanan == item).update({"stok" : db_product_stock})
+    db_product = get_product(db,item)
+    stock = db_product.stok + qty
+    if(stock <= 0):
+        stock = 0
+    db.query(models.Product).filter(models.Product.product_id == item).update({"stok" : stock},synchronize_session="fetch")
+    db.add(db_product)
+    db.commit()
+    db.refresh(db_product)
 
 def update_order_status(db:Session, id_order: int, status_change: str):
     db_order = get_order(db, id_order)
-    db.query(models.Order).filter(models.Order.id_pesanan == id_order).update({"status_pesanan":status_change}, synchronize_session = "fetch")
+    db.query(models.Order).filter(models.Order.id_pesanan == id_order).update({models.Order.status_pesanan : status_change}, synchronize_session = "fetch")
     db.commit()
     db.refresh(db_order)
 

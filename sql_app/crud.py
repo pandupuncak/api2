@@ -43,7 +43,9 @@ def create_item_order(db: Session, item: schemas.PayloadPesanan, pesanan: int):
     db.refresh(db_item)
 
     update_item_stock(db,item.id_produk, -1)
-    #add_order_harga(db,pesanan,harga_produk)
+    
+    if(db_item.total_harga_produk == 0):
+        add_order_harga(db,pesanan,harga_produk)
     return db_item
 
 def update_item_stock(db: Session, item: int, qty: int):

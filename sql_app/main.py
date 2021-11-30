@@ -34,7 +34,19 @@ def get_benefit(id_benefit: int, db: Session = Depends(get_db)):
 
 @app.post("/orders/", response_model = schemas.Pesanan, tags=["order"])
 def order(pesanan : schemas.PesananCreate,db: Session = Depends(get_db)):
+    
+    check_kuantitas = False
+    for item in pesanan.produk:
+        if item.kuantitas >0:
+            check_kuantitas = True
+    if not check_kuantitas:
+        raise HTTPException(status_code=403, detail="No items ordered")
+
     db_order = crud.create_order(db,pesanan)
+
+    if db_order is None:
+        raise HTTPException(status_code=404, detail= "Order details invalid")
+
     db_orderitems = []
     for item in pesanan.produk:
         item_ordered = crud.create_item_order(db, item, db_order.id_pesanan)

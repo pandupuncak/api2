@@ -1,5 +1,5 @@
 from datetime import date
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel
 
@@ -52,10 +52,15 @@ class PesananBase(BaseModel):
     id_benefit : Optional[int]
     status_pesanan : str = "Accepted"
 
-class PesananCreate(PesananBase):
+
+class PayloadPesanan(BaseModel):
     id_produk: int
     kuantitas: int
     notes: Optional[str]
+    
+
+class PesananCreate(PesananBase):
+    produk : List[PayloadPesanan]
 
 class PesananUpdate(PesananBase):
     id_pesanan: int

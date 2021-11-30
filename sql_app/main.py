@@ -35,8 +35,11 @@ def get_benefit(id_benefit: int, db: Session = Depends(get_db)):
 @app.post("/orders/", response_model = schemas.Pesanan, tags=["order"])
 def order(pesanan : schemas.PesananCreate,db: Session = Depends(get_db)):
     db_order = crud.create_order(db,pesanan)
-    db_orderitems = crud.create_item_order(db, pesanan, db_order.id_pesanan)
-    if(pesanan.benefit != None):
+    db_orderitems = []
+    for item in pesanan.produk:
+        item_ordered = crud.create_item_order(db, item, db_order.id_pesanan)
+        db_orderitems.append(item_ordered)
+    if "benefit" in pesanan:
         crud.apply_benefit(db,db_order.id_pesanan,pesanan.benefit)
     return db_order
 
@@ -44,3 +47,8 @@ def order(pesanan : schemas.PesananCreate,db: Session = Depends(get_db)):
 def update_order(update : schemas.PesananUpdate, db: Session = Depends(get_db)):
     orders = crud.update_order(db,update)# tambahin exception kalau salah
     return orders
+
+# @app.patch("/orders/status", response_model = dict, tags=["order"])
+# def update_order(update : schemas.PesananUpdate, db: Session = Depends(get_db)):
+#     orders = crud.update_order(db,update)# tambahin exception kalau salah
+#     return orders

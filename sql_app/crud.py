@@ -34,7 +34,7 @@ def create_order(db: Session, order: schemas.PesananCreate):
     return db_order
 
 
-def create_item_order(db: Session, item: schemas.PesananCreate, pesanan: int):
+def create_item_order(db: Session, item: schemas.PayloadPesanan, pesanan: int):
     harga_produk = item.kuantitas * (get_product(db,item.id_produk).harga)
     db_item = models.item_pesanan(id_pesanan = pesanan, id_produk = item.id_produk, kuantitas= item.kuantitas, 
     total_harga_produk = harga_produk, notes = item.notes) #update total harga
@@ -42,9 +42,7 @@ def create_item_order(db: Session, item: schemas.PesananCreate, pesanan: int):
     db.commit()
     db.refresh(db_item)
 
-
-    add_order_harga(db,pesanan,harga_produk)
-
+    #add_order_harga(db,pesanan,harga_produk)
     return db_item
 
 def update_order_status(db:Session, id_order: int, status_change: str):
@@ -68,7 +66,8 @@ def update_order(db: Session, order: schemas.PesananUpdate):
     return db_order
 
 def apply_benefit(db: Session, id_order: int, id_benefit: int):
-    db_order = get_order(db, order.id_pesanan)
+    db_order = get_order(db, id_order)
     db_benefit_diskon = get_benefit(db,id_benefit)
     harga_update = db_order.total_harga - db_benefit_diskon.diskon
     db_order.update({"total_harga": harga_update}, synchronize_session = "fetch")
+

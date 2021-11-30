@@ -70,7 +70,7 @@ class Benefit(Base):
     caption = Column(String(255))
     syarat_ketentuan = Column(Text)
     diskon = Column(Integer)
-    stok = Column(Integer)
+    syarat_poin = Column(Integer)
 
 # class BenefitMember(Base):
 #     __tablename__ = "benefitMember"

@@ -38,15 +38,23 @@ def order(pesanan : schemas.PesananCreate,db: Session = Depends(get_db)):
     db_orderitems = []
     for item in pesanan.produk:
         item_ordered = crud.create_item_order(db, item, db_order.id_pesanan)
+        if pesanan.total_harga == 0:
+            crud.add_order_harga(db,db_order.id_pesanan,item_ordered.total_harga_produk)
         db_orderitems.append(item_ordered)
     if "benefit" in pesanan:
-        crud.apply_benefit(db,db_order.id_pesanan,pesanan.benefit)
+        crud.apply_benefit(db,db_order.id_pesanan,pesanan.benefit) #Update Schemanya
+
     return db_order
 
 @app.patch("/orders/", response_model = schemas.Pesanan, tags=["order"])
 def update_order(update : schemas.PesananUpdate, db: Session = Depends(get_db)):
     orders = crud.update_order(db,update)# tambahin exception kalau salah
     return orders
+
+@app.patch("/orders/{harga}", response_model = schemas.Pesanan, tags=["order"])
+def update_order(id_pesanan: int, update_harga : int, db: Session = Depends(get_db)):
+    db_order = crud.add_order_harga(db,id_pesanan, update_harga)
+    return db_order
 
 # @app.patch("/orders/status", response_model = dict, tags=["order"])
 # def update_order(update : schemas.PesananUpdate, db: Session = Depends(get_db)):

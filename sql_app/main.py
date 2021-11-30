@@ -54,9 +54,7 @@ def order(pesanan : schemas.PesananCreate,db: Session = Depends(get_db)):
             crud.add_order_harga(db,db_order.id_pesanan,item_ordered.total_harga_produk)
         db_orderitems.append(item_ordered)
     if (hasattr(pesanan,"id_benefit")):
-        crud.apply_benefit(db,db_order.id_pesanan,pesanan.id_benefit) #Update Schemanya
-        db_order = db_order
-
+        db_order = crud.apply_benefit(db,db_order.id_pesanan,pesanan.id_benefit) #Update Schemanya
     return db_order
 
 @app.patch("/orders/", response_model = schemas.Pesanan, tags=["order"])

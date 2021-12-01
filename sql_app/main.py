@@ -53,7 +53,7 @@ def order(pesanan : schemas.PesananCreate,db: Session = Depends(get_db)):
         if pesanan.total_harga == 0:
             crud.add_order_harga(db,db_order.id_pesanan,item_ordered.total_harga_produk)
         db_orderitems.append(item_ordered)
-    if (hasattr(pesanan,"id_benefit")):
+    if (hasattr(pesanan,"id_benefit") and (pesanan.id_benefit != None)):
         db_order = crud.apply_benefit(db,db_order.id_pesanan,pesanan.id_benefit) #Update Schemanya
     return db_order
 
